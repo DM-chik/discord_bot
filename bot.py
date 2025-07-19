@@ -1,4 +1,3 @@
-from cogs import Cogs
 import disnake
 import os
 from dotenv import load_dotenv
@@ -8,8 +7,13 @@ load_dotenv()
 intents = disnake.Intents.all()
 bot = commands.Bot(command_prefix="!", test_guilds=[867424312897306676], intents=intents)
 bot_token = os.getenv("bot_token")
-bot.add_cog(Cogs(bot))
 
+cogs_list = []
+for i in os.listdir("cogs"):
+    cogs_list.append(i[:-3])
+cogs_list.remove("__pycach")
+for i in cogs_list:
+    bot.load_extension(f'cogs.{i}')
 
 @bot.event
 async def on_ready():
