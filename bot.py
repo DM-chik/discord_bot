@@ -15,6 +15,7 @@ cogs_list.remove("__pycach")
 for i in cogs_list:
     bot.load_extension(f'cogs.{i}')
 
+
 @bot.event
 async def on_ready():
     print(f"Бот {bot.user} готов!")
