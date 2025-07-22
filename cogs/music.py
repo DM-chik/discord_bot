@@ -22,8 +22,7 @@ class Music(commands.Cog):
                 for j in open('bad_words', encoding="utf-8"):
                     if j.lower()[:-1] == i.lower():
                         await message.delete()
-                        await message.channel.send(f'{message.author.mention} долбаёб')
-                        return
+                        return await message.channel.send(f'{message.author.mention} долбаёб')
 
     @commands.slash_command()
     async def ping(self, inter):
@@ -32,28 +31,23 @@ class Music(commands.Cog):
     @commands.slash_command()
     async def play_file(self, inter: ApplicationCommandInteraction, audio_file: str):
         if inter.author.voice is None:
-            await inter.response.send_message('Вы не находитесь в голосовом канале')
-            return
+            return await inter.response.send_message('Вы не находитесь в голосовом канале', ephemeral=True)
         channel = inter.author.voice.channel
         voice_client = inter.guild.voice_client
         if voice_client is None:
             try:
                 voice_client = await channel.connect()
             except ClientException as e:
-                await inter.response.send_message(f'Ошибка подключения: {e}', ephemeral=True)
-                return
+                return await inter.response.send_message(f'Ошибка подключения: {e}', ephemeral=True)
             except Exception as e:
-                await inter.response.send_message(f'Неизвестная ошибка подключения: {e}', ephemeral=True)
-                return
+                return await inter.response.send_message(f'Неизвестная ошибка подключения: {e}', ephemeral=True)
         if voice_client.channel != channel:
-            await inter.response.send_message('Я уже подключен к другому голосовому каналу', ephemeral=True)
-            return
+            return await inter.response.send_message('Я уже подключен к другому голосовому каналу', ephemeral=True)
         try:
             with open('sounds/' + audio_file, 'rb'):
                 pass
         except FileNotFoundError:
-            await inter.response.send_message(f'Файл {audio_file} не найден', ephemeral=True)
-            return
+            return await inter.response.send_message(f'Файл {audio_file} не найден', ephemeral=True)
         try:
             if voice_client.is_playing():
                 voice_client.stop()
@@ -65,16 +59,13 @@ class Music(commands.Cog):
 
     @commands.slash_command()
     async def stop_playing(self, inter: ApplicationCommandInteraction):
-        if inter.author.voice is None:
-            await inter.response.send_message('Вы не находитесь в голосовом канале', ephemeral=True)
-            return
         voice_client = inter.guild.voice_client
+        if inter.author.voice is None:
+            return await inter.response.send_message('Вы не находитесь в голосовом канале', ephemeral=True)
         if voice_client is None:
-            await inter.response.send_message('Бот не находится в голосовом канале', ephemeral=True)
-            return
+            return await inter.response.send_message('Бот не находится в голосовом канале', ephemeral=True)
         if inter.author.voice.channel != voice_client.channel:
-            await inter.response.send_message('Бот не находится в вашем голосовом канале', ephemeral=True)
-            return
+            return await inter.response.send_message('Бот не находится в вашем голосовом канале', ephemeral=True)
         try:
             if voice_client.is_playing():
                 voice_client.stop()
